@@ -1,0 +1,11 @@
+.navbar {
+  background: rgb(41, 41, 41);
+  height: 50px;
+  width: 1500px;
+  align-items: center;
+}
+.navbar a {
+  margin: 0px 25px;
+  text-decoration: none;
+  color: white;
+}
