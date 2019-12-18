@@ -1,0 +1,2 @@
+https://stackoverflow.com/questions/42059991/req-getconnection-is-not-a-function-node-js
+
