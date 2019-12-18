@@ -4,11 +4,10 @@ import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { createStore } from "redux";
+import logged from "./reducers/logged";
 import { Provider } from "react-redux";
-import LogReducer from "./reducers/isLogged";
-
 const store = createStore(
-  LogReducer,
+  logged,
   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 );
 

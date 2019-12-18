@@ -1,70 +1,88 @@
 import React from "react";
-import { BrowserRouter, Route } from "react-router-dom";
-import Navbar from "./components/Navbar/Navbar";
-import Home from "./components/Home/Home";
-import WatchList from "./components/WatchList/WatchList";
+// import logo from "./logo.svg";
 import "./App.css";
-import Signin from "./components/Signin/Signin";
-import Protect from "./components/Protect";
-import ProtectSignin from "./components/ProtectSignin";
-import { connect } from "react-redux";
-
-// import CssBaseline from "@material-ui/core/CssBaseline";
-// import Typography from "@material-ui/core/Typography";
-import Container from "@material-ui/core/Container";
-import Movies from "./components/Movies/Movies";
+import Navbar from "./componentes/Navbar/Navbar.js";
+import watchList from "./componentes/Navbar/WatchList/watchList";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import movies from "./componentes/Movies/Movies.js";
+import Signin from "./componentes/signin/signin";
+import Home from "./componentes/Home/Home.js";
+import { Redirect } from "react-router-dom";
+function ProtectedRoute({ Component, isLoggedIn, ...rest }) {
+  return (
+    <Route
+      {...rest}
+      render={props => {
+        return isLoggedIn ? (
+          <Component {...props} />
+        ) : (
+          <Redirect
+            to={{
+              pathname: "/Signin",
+              state: { from: props.location.pathname }
+            }}
+          />
+        );
+      }}
+    />
+  );
+}
 
 class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isLoggedIn: false
+    };
+  }
+  handleLogin = (email, password) => {
+    if (email === "pooja@gmail.com" && password === "12345") {
+      this.setState({
+        isLoggedIn: true
+      });
+    } else {
+      this.setState({
+        isLoggedIn: false
+      });
+    }
+  };
   render() {
-    const { user } = this.props;
+    const { isLoggedIn } = this.state;
     return (
       <div className="App">
-        {/* <React.Fragment> */}
-          {/* <CssBaseline />
-          <Container maxWidth="md">
-            <Typography
-              component="div"
-              style={{
-                backgroundColor: "gray",
-                minHeight: "100vh",
-                height: "auto",
-                paddingBottom: "30px"
+        <Router>
+          {/* <Navbar isLoggedIn={isLoggedIn} /> */}
+          <Navbar />
+          <Switch>
+            <ProtectedRoute path="/home" component={Home} />
+            <Route
+              path="/signin"
+              render={props => {
+                return (
+                  <Signin
+                    {...props}
+                    handleLogin={this.handleLogin}
+                    isLoggedIn={isLoggedIn}
+                  />
+                );
               }}
-            > */}
-              <BrowserRouter>
-                <Navbar />
-                <Route exact path="/" component={Home} />
-                <Route exact path="/movies" component={Movies} />
-                <Protect path="/watchlist" Component={WatchList} user={user} />
-                <ProtectSignin
-                  path="/signin"
-                  Component={Signin}
-                  user={user}
-                  handleSubmit={this.handleSubmit}
-                />
-              </BrowserRouter>
-            {/* </Typography> */}
-          {/* </Container> */}
-        {/* </React.Fragment> */}
+            />
+            <ProtectedRoute
+              path="/watchlist"
+              Component={watchList}
+              isLoggedIn={isLoggedIn}
+            />
+            <ProtectedRoute
+              path="/movies"
+              Component={movies}
+              isLoggedIn={isLoggedIn}
+            />
+            <Redirect to="/home" />
+          </Switch>
+        </Router>
       </div>
     );
   }
 }
 
-const mapStateToProps = (state) => {
-  console.log("State", state);
-  return {
-    user: state.user
-  };
-};
-export default connect(mapStateToProps)(App);
-
-// function connect(msp) {
-//   const extraProps = msp(state);
-
-//   const x = ({Component}) => {
-//     return <Component {...extraProps} dispatch={dispatch}/>
-//   }
-
-//   return x;
-// }
+export default App;
