@@ -4,7 +4,13 @@ let apirouter = require('./routes/router');
 
 
 let app = express();
-app.use('/api', apirouter);           //use is middleware, incoming request has go through this
+app.use('/api', apirouter);         //use is middleware, incoming request has go through this
+
+
+
+
+
+
 
 app.use (express.json);   //body convert to json;
 
