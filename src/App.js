@@ -1,88 +1,60 @@
 import React from "react";
-// import logo from "./logo.svg";
+import { BrowserRouter, Route } from "react-router-dom";
+import Navbar from "./components/Navbar/Navbar";
+import Home from "./components/Home/Home";
+import WatchList from "./components/WatchList/WatchList";
 import "./App.css";
-import Navbar from "./componentes/Navbar/Navbar.js";
-import watchList from "./componentes/Navbar/WatchList/watchList";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import movies from "./componentes/Movies/Movies.js";
-import Signin from "./componentes/signin/signin";
-import Home from "./componentes/Home/Home.js";
-import { Redirect } from "react-router-dom";
-function ProtectedRoute({ Component, isLoggedIn, ...rest }) {
-  return (
-    <Route
-      {...rest}
-      render={props => {
-        return isLoggedIn ? (
-          <Component {...props} />
-        ) : (
-          <Redirect
-            to={{
-              pathname: "/Signin",
-              state: { from: props.location.pathname }
-            }}
-          />
-        );
-      }}
-    />
-  );
-}
+import Signin from "./components/Signin/Signin";
+import Protect from "./components/Protect";
+import ProtectSignin from "./components/ProtectSignin";
+import { connect } from "react-redux";
+
+import CssBaseline from "@material-ui/core/CssBaseline";
+import Typography from "@material-ui/core/Typography";
+import Container from "@material-ui/core/Container";
+import Movies from "./components/Movies/Movies";
 
 class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isLoggedIn: false
-    };
-  }
-  handleLogin = (email, password) => {
-    if (email === "pooja@gmail.com" && password === "12345") {
-      this.setState({
-        isLoggedIn: true
-      });
-    } else {
-      this.setState({
-        isLoggedIn: false
-      });
-    }
-  };
   render() {
-    const { isLoggedIn } = this.state;
+    const { user } = this.props;
     return (
       <div className="App">
-        <Router>
-          {/* <Navbar isLoggedIn={isLoggedIn} /> */}
-          <Navbar />
-          <Switch>
-            <ProtectedRoute path="/home" component={Home} />
-            <Route
-              path="/signin"
-              render={props => {
-                return (
-                  <Signin
-                    {...props}
-                    handleLogin={this.handleLogin}
-                    isLoggedIn={isLoggedIn}
-                  />
-                );
+        {/* <React.Fragment> */}
+          <CssBaseline />
+          <Container maxWidth="md">
+            <Typography
+              component="div"
+              style={{
+                backgroundColor: "gray",
+                minHeight: "100vh",
+                height: "auto",
+                paddingBottom: "30px"
               }}
-            />
-            <ProtectedRoute
-              path="/watchlist"
-              Component={watchList}
-              isLoggedIn={isLoggedIn}
-            />
-            <ProtectedRoute
-              path="/movies"
-              Component={movies}
-              isLoggedIn={isLoggedIn}
-            />
-            <Redirect to="/home" />
-          </Switch>
-        </Router>
+            >
+              <BrowserRouter>
+                <Navbar />
+                <Route exact path="/" component={Home} />
+                <Route exact path="/movies" component={Movies} />
+                <Protect path="/watchlist" Component={WatchList} user={user} />
+                <ProtectSignin
+                  path="/signin"
+                  Component={Signin}
+                  user={user}
+                  handleSubmit={this.handleSubmit}
+                />
+              </BrowserRouter>
+            </Typography>
+          </Container>
+        {/* </React.Fragment> */}
       </div>
     );
   }
 }
 
-export default App;
+const mapStateToProps = (state) => {
+  console.log("State", state);
+  return {
+    user: state.user
+  };
+};
+export default connect(mapStateToProps)(App);

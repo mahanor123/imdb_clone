@@ -1,3 +1,7 @@
 .App {
   text-align: center;
 }
+
+#root {
+  background: rgb(209, 209, 209);
+}
